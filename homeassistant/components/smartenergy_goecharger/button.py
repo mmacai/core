@@ -38,9 +38,8 @@ class BaseButtonDescription(ButtonEntityDescription):
     press_args: None = None
 
 
-# pylint: disable=too-few-public-methods
-class BaseDescriptiveEntity:
-    """Representation of a Base device entity based on a description."""
+class WallboxControlButton(CoordinatorEntity, ButtonEntity):
+    """Representation of a Charge Button."""
 
     def __init__(
         self,
@@ -51,18 +50,13 @@ class BaseDescriptiveEntity:
         attribute,
     ) -> None:
         """Initialize the device."""
-        super().__init__()
+        super().__init__(coordinator)
         self.entity_description = description
         self.entity_id = description.key
         self._attr_unique_id = description.key
         self._device_id = device_id
         self._charger_controller: ChargerController = ChargerController(hass)
         self._attribute = attribute
-        self.coordinator = coordinator
-
-
-class WallboxControlButton(BaseDescriptiveEntity, CoordinatorEntity, ButtonEntity):
-    """Representation of a Charge Button."""
 
     async def async_press(self) -> None:
         """Handle the button press. Start/stop charging or authenticate the user."""

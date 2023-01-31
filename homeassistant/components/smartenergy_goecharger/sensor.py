@@ -1,6 +1,5 @@
 """Sensor platform configuration for go-e Charger Cloud."""
 
-from abc import ABC, abstractmethod
 import logging
 import numbers
 from typing import Literal
@@ -85,8 +84,8 @@ CHARGER_SENSORS_CONFIG: dict = {
 }
 
 
-class BaseSensor(ABC):
-    """Representation of a Base sensor."""
+class ChargerSensor(CoordinatorEntity, SensorEntity):
+    """Representation of a sensor for the go-e Charger Cloud."""
 
     def __init__(
         self,
@@ -97,7 +96,7 @@ class BaseSensor(ABC):
     ) -> None:
         """Initialize the Base sensor."""
 
-        super().__init__()
+        super().__init__(coordinator)
         self._device_id = device_id
         self.entity_id = entity_id
         self._name: str = attributes["name"]
@@ -105,31 +104,6 @@ class BaseSensor(ABC):
         self._unit: str = attributes["unit"]
         self._attr_state_class = attributes["state_class"]
         self._attr_device_class = attributes["device_class"]
-        self.coordinator = coordinator
-
-    @property
-    @abstractmethod
-    def device_info(self) -> entity.DeviceInfo:
-        """Return the info about the device."""
-
-    @property
-    def name(self) -> str:
-        """Return the name of the sensor."""
-        return self._name
-
-    @property
-    def unique_id(self) -> str:
-        """Return the unique_id of the sensor."""
-        return f"{self._device_id}_{self._attribute}"
-
-    @property
-    @abstractmethod
-    def native_value(self) -> float | str | int | None:
-        """Return the state of the sensor."""
-
-
-class ChargerSensor(BaseSensor, CoordinatorEntity, SensorEntity):
-    """Representation of a sensor for the go-e Charger Cloud."""
 
     @property
     def device_info(self) -> entity.DeviceInfo:
@@ -142,14 +116,19 @@ class ChargerSensor(BaseSensor, CoordinatorEntity, SensorEntity):
         }
 
     @property
+    def native_unit_of_measurement(self) -> str | None:
+        """Return the unit of measurement of the sensor, if any."""
+        return self._unit
+
+    @property
     def native_value(self) -> float | str | int | None:
         """Return the state of the sensor."""
         if self._attribute not in self.coordinator.data[self._device_id]:
             return None
 
-        attr_value: float | str = float(
-            self.coordinator.data[self._device_id][self._attribute]
-        )
+        attr_value: float | str = self.coordinator.data[self._device_id][
+            self._attribute
+        ]
 
         # if charging is not allowed, show current as 0
         if (

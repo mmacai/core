@@ -47,9 +47,8 @@ class BaseSelectDescription(SelectEntityDescription):
     press_args: None = None
 
 
-# pylint: disable=too-few-public-methods
-class BaseDescriptiveEntity:
-    """Representation of a Base device entity based on a description."""
+class PhaseSelectInput(CoordinatorEntity, SelectEntity):
+    """Representation of the phase mode select input."""
 
     def __init__(
         self,
@@ -61,7 +60,7 @@ class BaseDescriptiveEntity:
     ) -> None:
         """Initialize the device."""
 
-        super().__init__()
+        super().__init__(hass.data[DOMAIN][f"{device_id}_coordinator"])
         self.entity_description = description
         self.entity_id = description.key
         self._attr_unique_id = description.key
@@ -71,11 +70,6 @@ class BaseDescriptiveEntity:
         self._attr_current_option = options["current_option"]
         self._attr_options = options["regular"]
         self._attr_device_class = input_props["device_class"]
-        self.coordinator = hass.data[DOMAIN][f"{device_id}_coordinator"]
-
-
-class PhaseSelectInput(BaseDescriptiveEntity, CoordinatorEntity, SelectEntity):
-    """Representation of the phase mode select input."""
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""

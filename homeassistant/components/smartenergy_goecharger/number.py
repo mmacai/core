@@ -47,9 +47,8 @@ class BaseNumberDescription(NumberEntityDescription):
     press_args: None = None
 
 
-# pylint: disable=too-few-public-methods
-class BaseDescriptiveEntity:
-    """Representation of a Base device entity based on a description."""
+class CurrentInputNumber(CoordinatorEntity, NumberEntity):
+    """Representation of the current number input."""
 
     def __init__(
         self,
@@ -60,7 +59,7 @@ class BaseDescriptiveEntity:
     ) -> None:
         """Initialize the device."""
 
-        super().__init__()
+        super().__init__(hass.data[DOMAIN][f"{device_id}_coordinator"])
         self.entity_description = description
         self.entity_id: str = description.key
         self._attr_unique_id = description.key
@@ -70,11 +69,6 @@ class BaseDescriptiveEntity:
         self._min: int = input_props["min"]
         self._max: int = input_props["max"]
         self._step: int = input_props["step"]
-        self.coordinator = hass.data[DOMAIN][f"{device_id}_coordinator"]
-
-
-class CurrentInputNumber(BaseDescriptiveEntity, CoordinatorEntity, NumberEntity):
-    """Representation of the current number input."""
 
     @property
     def native_max_value(self) -> float:
