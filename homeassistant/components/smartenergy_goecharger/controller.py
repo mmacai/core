@@ -14,14 +14,6 @@ from .const import API, CAR_STATUS, CHARGERS_API, CHARGING_ALLOWED, DOMAIN, INIT
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
-# class DictObj(dict):
-#     """Simple dict class to be able to have data attribute and direct access via dot notation."""
-
-#     def __init__(self) -> None:
-#         """Construct dictionary with empty data property."""
-#         self.data: dict = {}
-
-
 def init_service_data(data: dict, service: str) -> ServiceCall:
     """Initialize Home Assistant service call dict with data attribute and initial values."""
 

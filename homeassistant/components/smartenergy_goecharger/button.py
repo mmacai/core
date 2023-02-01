@@ -76,9 +76,8 @@ class WallboxControlButton(CoordinatorEntity, ButtonEntity):
         elif data[CAR_STATUS] == CarStatus.CAR_CONNECTED_AUTH_REQUIRED:
             # car status is 3 - authenticate
             service_data = init_service_data(
-                {"device_name": self._device_id}, "set_transaction"
+                {"device_name": self._device_id, "status": 0}, "set_transaction"
             )
-            service_data.data["status"] = 0
             await self._charger_controller.set_transaction(service_data)
         elif data[CAR_STATUS] == CarStatus.CHARGING_FINISHED_DISCONNECT:
             # car status is 4 - start charging
